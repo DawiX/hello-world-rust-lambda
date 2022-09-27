@@ -6,7 +6,7 @@ use serde_json::{
 
 mod s3;
 mod aws_config;
-mod response;
+mod model;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -15,7 +15,7 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-async fn func(event: LambdaEvent<Value>) -> Result<response::Response, Error> {
+async fn func(event: LambdaEvent<Value>) -> Result<model::Response, Error> {
     let (event, _context) = event.into_parts();
     let first_name = event["firstName"].as_str().unwrap_or("world");
     println!("Got first name: {}",first_name );
@@ -27,7 +27,7 @@ async fn func(event: LambdaEvent<Value>) -> Result<response::Response, Error> {
     let config = aws_config::generate_config().await;
     let buckets = s3::list_buckets(config).await;
 
-    let lambda_response = response::Response {
+    let lambda_response = model::Response {
         message: format!("Hello, {}!", first_name),
         buckets: buckets?,
     };
